@@ -1,0 +1,222 @@
+﻿
+@{
+    ViewData["Title"] = "Funcionario";
+}
+
+<h2>Funcionario</h2>
+
+<html>
+<head>
+    <title>Colaboradores</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+
+        function ShowResponse(resposta) {
+
+            var obj = JSON.parse(resposta);
+
+            var id = obj.employeeID;
+            var username = obj.firstName;
+            var name = obj.lastName;
+            var email = obj.city;
+
+            var tr_str = "<tr>" +
+                "<td align='center'>" + id + "</td>" +
+                "<td align='center'>" + username + "</td>" +
+                "<td align='center'>" + name + "</td>" +
+                "<td align='center'>" + email + "</td>" +
+                "</tr>";
+
+            $("#userTable tbody").append(tr_str);
+
+        }
+
+        $(document).ready(function () {
+            const baseUrl = "https://localhost:44377";
+
+            var options = {};
+            options.url = baseUrl + "/api/employee";
+            options.type = "GET";
+            options.dataType = "json";
+            options.success = function (data) {
+                data.forEach(function (element) {
+                    $("#id").append("<option>"
+                        + element.employeeID + "</option>");
+                });
+            };
+            options.error = function () {
+                $("#msg").html("Erro ao chamar a API!");
+            };
+            $.ajax(options);
+
+
+            $("#id").change(function () {
+
+                var options = {};
+                options.url = baseUrl + "/api/employee/" +  $("#id").val();
+                options.type = "GET";
+                options.dataType = "json";
+                options.success = function (data) {
+                    
+                    $("#nome").val(data.firstName);
+                    $("#sobrenome").val(data.lastName);
+                    $("#cidade").val(data.city);
+
+                    var jsonString = JSON.stringify(data);
+                    ShowResponse(jsonString);
+
+                };
+                options.error = function () {
+                    $("#msg").html("Erro ao chamar a API!");
+                };
+                $.ajax(options);
+            });
+
+            $("#incluir").click(function () {
+
+                var options = {};
+                options.url = baseUrl + "/api/employee";
+                options.type = "POST";
+
+                var obj = {};
+                obj.firstName = $("#nome").val();
+                obj.lastName = $("#sobrenome").val();
+                obj.city = $("#cidade").val();
+
+                options.data = JSON.stringify(obj);
+                options.contentType = "application/json";
+                options.dataType = "html";
+
+                //options.success = function (msg) {
+                //    $("#msg").html(msg);
+                //};
+
+                options.success = function (response) {
+                                      
+                    ShowResponse(response);
+
+                    //var obj = JSON.parse(response);
+
+                    //var id = obj.employeeID;
+                    //var username = obj.firstName;
+                    //var name = obj.lastName;
+                    //var email = obj.city;
+
+                    //var tr_str = "<tr>" +
+                    //    "<td align='center'>" + id + "</td>" +
+                    //    "<td align='center'>" + username + "</td>" +
+                    //    "<td align='center'>" + name + "</td>" +
+                    //    "<td align='center'>" + email + "</td>" +
+                    //    "</tr>";
+
+                    //$("#userTable tbody").append(tr_str);
+
+
+                }
+
+
+                options.error = function () {
+                    $("#msg").html("Erro ao chamar a API!");
+                };
+                $.ajax(options);
+            });
+
+            $("#atualizar").click(function () {
+
+                var options = {};
+                options.url = baseUrl + "/api/employee/"
+                    + $("#id").val();
+                options.type = "PUT";
+
+                var obj = {};
+                obj.employeeID = $("#id").val();
+                obj.firstName = $("#nome").val();
+                obj.lastName = $("#sobrenome").val();
+                obj.city = $("#cidade").val();
+
+                options.data = JSON.stringify(obj);
+                options.contentType = "application/json";
+                options.dataType = "html";
+                options.success = function (msg) {
+                    $("#msg").html(msg);
+                };
+                options.error = function () {
+                    $("#msg").html("Erro ao chamar a API!");
+                };
+                $.ajax(options);
+            });
+
+            $("#excluir").click(function () {
+
+                var options = {};
+                options.url = baseUrl + "/api/employee/"
+                    + $("#id").val();
+                options.type = "DELETE";
+                options.dataType = "html";
+                options.success = function (msg) {
+                    $("#msg").html(msg);
+                };
+                options.error = function () {
+                    $("#msg").html("Erro ao chamar a API!");
+                };
+                $.ajax(options);
+            });
+
+        });
+
+    </script>
+</head>
+<body>
+    <h1>Colaboradores</h1>
+    <div class="container">
+        <form>
+            <table border="1" cellpadding="10">
+                <tr>
+                    <td>Colaborador ID :</td>
+                    <td>
+                        <select id="id"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nome :</td>
+                    <td><input id="nome" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Sobrenome :</td>
+                    <td><input id="sobrenome" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Cidade :</td>
+                    <td><input id="cidade" type="text" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" id="incluir"
+                               value="Incluir" />
+                        <input type="button" id="atualizar"
+                               value="Atualizar" />
+                        <input type="button" id="excluir"
+                               value="Excluir" />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <div id="msg"></div>
+
+            <table id="userTable" border="1">
+                <thead>
+                    <tr>
+                        <th width="5%">S.no</th>
+                        <th width="20%">Username</th>
+                        <th width="20%">Name</th>
+                        <th width="30%">Email</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </form>
+    </div>
+</body>
+</html>
