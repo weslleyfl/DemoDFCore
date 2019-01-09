@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DemoDFCore.Data;
+using DemoDFCore.Models.Interfaces;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DemoDFCore.Data.Repository;
 
 namespace DemoDFCore
 {
@@ -28,6 +30,7 @@ namespace DemoDFCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add application services.
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -35,6 +38,9 @@ namespace DemoDFCore
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            //  dependency injection 
+            services.AddTransient<IProductRepository, FakeProductRepository>();
 
             // Add framework services.
             //services.AddMvc()
